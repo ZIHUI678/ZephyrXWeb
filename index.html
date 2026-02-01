@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZephyrX Studio - 创新技术解决方案</title>
+    <link rel="icon" type="image/png" href="https://zephyrx.us.ci/ZephyrX工作室图标.png">
+    <link rel="shortcut icon" type="image/png" href="https://zephyrx.us.ci/ZephyrX工作室图标.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0f;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* 动态背景网格 */
+        .bg-grid {
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* 发光效果 */
+        .glow {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+        }
+        
+        .glow-hover:hover {
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.8);
+        }
+        
+        /* 文字渐变 */
+        .text-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* 玻璃拟态 */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 浮动动画 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        /* 脉冲动画 */
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+        
+        .animate-pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #6366f1;
+            border-radius: 5px;
+        }
+        
+        /* 按钮闪烁效果 */
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-shine::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+            transition: 0.5s;
+        }
+        
+        .btn-shine:hover::before {
+            left: 100%;
+        }
+        
+        /* 卡片悬停效果 */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* 粒子画布 */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* 图标样式 */
+        .product-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+        
+        /* 统计数字动画 */
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stat-number {
+            animation: countUp 1s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 粒子背景 -->
+    <canvas id="particles"></canvas>
+    
+    <!-- 动态网格背景 -->
+    <div class="fixed inset-0 bg-grid opacity-30 z-[-1]"></div>
+
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <img src="https://zephyrx.us.ci/ZephyrX工作室图标.png" alt="ZephyrX" class="w-9 h-9 rounded-lg object-cover">
+                    <span class="font-bold text-xl tracking-tight">ZephyrX</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#home" class="hover:text-indigo-400 transition-colors px-3 py-2 rounded-md text-sm font-medium">首页</a>
+                        <a href="#products" class="hover:text-indigo-400 transition-colors px-3 py-2 rounded-md text-sm font-medium">产品</a>
+                        <a href="#about" class="hover:text-indigo-400 transition-colors px-3 py-2 rounded-md text-sm font-medium">关于我们</a>
+                        <a href="#features" class="hover:text-indigo-400 transition-colors px-3 py-2 rounded-md text-sm font-medium">特性</a>
+                        <a href="#download" class="hover:text-indigo-400 transition-colors px-3 py-2 rounded-md text-sm font-medium">下载</a>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <!-- 新增：声明按钮 -->
+                    <a href="https://zephyrx.us.ci/about.pdf" target="_blank" class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 transition-all text-sm font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        使用条款
+                    </a>
+                    <a href="https://pan.zx-cloud.de5.net" target="_blank" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all btn-shine">
+                        访问云盘
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center">
+                <div class="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-sm font-medium animate-pulse-glow">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    🚀 创新技术 · 安全可靠 · 极速体验
+                </div>
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                    <span class="block text-white">ZephyrX</span>
+                    <span class="block text-gradient mt-2">Studio</span>
+                </h1>
+                <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 leading-relaxed">
+                    专注于虚拟组网与云存储解决方案<br>
+                    为您打造安全、高效、合规的数字化生态系统
+                </p>
+                
+                <!-- 快速操作按钮组 - 已修改 -->
+                <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a href="https://github.com/ZIHUI678/ZeroLAN" target="_blank" class="group relative px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl font-bold text-lg transition-all hover:scale-105 glow-hover btn-shine flex items-center gap-2 w-full sm:w-auto justify-center">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        前往项目地址
+                        <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">GitHub 开源仓库</span>
+                    </a>
+                    <a href="https://pan.zx-cloud.de5.net" target="_blank" class="px-8 py-4 glass rounded-xl font-bold text-lg hover:bg-white/10 transition-all flex items-center gap-2 border border-white/20 w-full sm:w-auto justify-center">
+                        <span class="text-xl">☁️</span>
+                        进入 ZX Cloud
+                    </a>
+                </div>
+                
+                <div class="mt-6 flex flex-wrap justify-center gap-4 text-sm text-gray-500">
+                    <a href="https://zephyrx.us.ci/about.pdf" target="_blank" class="flex items-center gap-1 text-amber-400 hover:text-amber-300 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        查看完整使用条款
+                    </a>
+                    <span class="hidden sm:inline">•</span>
+                    <span class="flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                        所有服务运行正常
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 装饰性元素 -->
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-600/20 rounded-full blur-3xl -z-10 animate-pulse-glow"></div>
+    </section>
+
+    <!-- 产品展示区 -->
+    <section id="products" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">核心产品</h2>
+                <p class="text-gray-400 text-lg">构建您的安全数字空间</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- ZeroLAN 产品卡 - 已修改 -->
+                <div class="glass rounded-2xl p-8 card-hover border border-indigo-500/20 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl -mr-16 -mt-16 transition-all group-hover:bg-indigo-500/30"></div>
+                    <div class="relative z-10">
+                        <div class="product-icon bg-gradient-to-br from-indigo-500 to-blue-600 text-white">
+                            🌐
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3 text-white">ZeroLAN</h3>
+                        <p class="text-gray-400 mb-6 leading-relaxed">
+                            开源虚拟组网工具，基于 EasyTier 实现。提供源代码，需自行编译部署，适用于游戏联机、远程办公等场景。
+                        </p>
+                        <ul class="space-y-2 mb-6 text-sm text-gray-300">
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                开源代码，自行编译
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                P2P 直连，低延迟
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                标准加密传输
+                            </li>
+                        </ul>
+                        <a href="https://github.com/ZIHUI678/ZeroLAN" target="_blank" class="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+                            查看源码
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ZX Cloud 产品卡 -->
+                <div class="glass rounded-2xl p-8 card-hover border border-purple-500/20 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-2xl -mr-16 -mt-16 transition-all group-hover:bg-purple-500/30"></div>
+                    <div class="relative z-10">
+                        <div class="product-icon bg-gradient-to-br from-purple-500 to-pink-600 text-white">
+                            ☁️
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3 text-white">ZX Cloud</h3>
+                        <p class="text-gray-400 mb-6 leading-relaxed">
+                            高速个人云盘服务，提供稳定的文件存储与分享解决方案。大容量存储空间，支持多平台访问，数据安全有保障。
+                        </p>
+                        <ul class="space-y-2 mb-6 text-sm text-gray-300">
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                高速下载通道
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                文件在线预览
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                分享链接管理
+                            </li>
+                        </ul>
+                        <a href="https://pan.zx-cloud.de5.net" target="_blank" class="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 font-medium transition-colors">
+                            访问云盘
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 新增：全 Java 快捷下载站 -->
+                <div class="glass rounded-2xl p-8 card-hover border border-orange-500/20 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-orange-500/20 rounded-full blur-2xl -mr-16 -mt-16 transition-all group-hover:bg-orange-500/30"></div>
+                    <div class="relative z-10">
+                        <div class="product-icon bg-gradient-to-br from-orange-500 to-red-600 text-white">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8.851 18.236s-1.65 1.276 1.164 1.699c3.382.52 5.125.453 8.859-.515 0 0 .983.614 2.356 1.144-8.402 3.611-18.959-.257-12.379-2.328zm-1.025-4.711s-1.848 1.369 1.011 1.663c3.786.378 6.795.408 11.991-.544 0 0 .683.691 1.759 1.07-10.647 3.112-22.558.245-14.761-2.189z"/>
+                                <path d="M13.743 6.171c2.225 2.562-.585 4.863-.585 4.863s5.632-2.911 3.048-6.554c-2.363-3.324-4.174-4.973 5.638-10.68 0 0-15.391 3.831-8.101 12.371z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3 text-white">全 Java 快捷下载站</h3>
+                        <p class="text-gray-400 mb-6 leading-relaxed">
+                            提供各版本 Java 开发环境快速下载服务。目前支持 Java 8，更多版本陆续添加中，方便开发者快速获取所需 JDK。
+                        </p>
+                        <ul class="space-y-2 mb-6 text-sm text-gray-300">
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                多版本 JDK 下载
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                目前支持 Java 8
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                持续更新更多版本
+                            </li>
+                        </ul>
+                        <a href="https://zephyrx.us.ci/download" target="_blank" class="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 font-medium transition-colors">
+                            进入下载站
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 关于我们 / 为什么选择我们 -->
+    <section id="about" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-indigo-900/20 via-purple-900/20 to-transparent"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 text-sm font-medium">
+                    <span>🛡️</span> 信任与安全
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-6">为什么选择我们？</h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    在数字化时代，我们致力于为用户提供安全、高效、合规的网络基础设施
+                </p>
+            </div>
+
+            <!-- 核心优势网格 -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+                <!-- 安全性 -->
+                <div class="glass rounded-2xl p-8 border border-red-500/20 hover:border-red-500/40 transition-all group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
+                        🔒
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">安全可靠</h3>
+                    <p class="text-gray-400 leading-relaxed mb-4">
+                        采用标准加密算法保护数据传输安全。端到端加密确保通信内容仅通信双方可访问，服务端无法解密。
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                            标准加密协议
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                            安全密钥交换
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                            开源协议可审计
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 速度 -->
+                <div class="glass rounded-2xl p-8 border border-amber-500/20 hover:border-amber-500/40 transition-all group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
+                        ⚡
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">闪电般的连接速度</h3>
+                    <p class="text-gray-400 leading-relaxed mb-4">
+                        基于 <strong class="text-amber-400">P2P直连技术</strong> 和智能路由优化，数据传输不经过中心服务器中转，延迟降低至毫秒级。
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                            平均延迟 &lt; 10ms
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                            带宽利用率高
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                            智能路由选择
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 隐私 -->
+                <div class="glass rounded-2xl p-8 border border-emerald-500/20 hover:border-emerald-500/40 transition-all group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
+                        👻
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">隐私保护</h3>
+                    <p class="text-gray-400 leading-relaxed mb-4">
+                        践行 <strong class="text-emerald-400">最小化数据收集</strong> 原则，不记录通信内容、不追踪用户行为、不向第三方共享数据。
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                            无内容日志记录
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                            本地数据处理
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                            透明隐私政策
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 去中心化 -->
+                <div class="glass rounded-2xl p-8 border border-blue-500/20 hover:border-blue-500/40 transition-all group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
+                        🌐
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">分布式架构</h3>
+                    <p class="text-gray-400 leading-relaxed mb-4">
+                        采用 <strong class="text-blue-400">点对点直连</strong> 技术，无单点故障风险，即使部分节点离线，网络依然保持畅通。
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                            无中心服务器瓶颈
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                            自动NAT穿透技术
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                            高可用性设计
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 易用性 -->
+                <div class="glass rounded-2xl p-8 border border-purple-500/20 hover:border-purple-500/40 transition-all group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
+                        🎯
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">极简用户体验</h3>
+                    <p class="text-gray-400 leading-relaxed mb-4">
+                        强大的功能不需要复杂的配置。一键连接、自动优化，让非技术用户也能轻松享受企业级网络安全。
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                            一键式快速连接
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                            智能路由自动选择
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                            全平台客户端支持
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 透明度 -->
+                <div class="glass rounded-2xl p-8 border border-indigo-500/20 hover:border-indigo-500/40 transition-all group">
+                    <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
+                        📖
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-white">完全透明运营</h3>
+                    <p class="text-gray-400 leading-relaxed mb-4">
+                        我们坚信信任建立在透明之上。核心代码开源审计，安全报告定期发布，运营状态实时公开。
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
+                            开源代码可审计
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
+                            独立安全评估
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 bg-indigo-500 rounded-full"></span>
+                            合规运营承诺
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 数据统计展示 -->
+            <div class="glass rounded-3xl p-8 md:p-12 border border-white/10 mb-20">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div class="stat-number">
+                        <div class="text-4xl md:text-5xl font-bold text-gradient mb-2">256</div>
+                        <div class="text-gray-400 text-sm">位加密强度</div>
+                    </div>
+                    <div class="stat-number" style="animation-delay: 0.1s">
+                        <div class="text-4xl md:text-5xl font-bold text-gradient mb-2">0</div>
+                        <div class="text-gray-400 text-sm">内容日志记录</div>
+                    </div>
+                    <div class="stat-number" style="animation-delay: 0.2s">
+                        <div class="text-4xl md:text-5xl font-bold text-gradient mb-2">&lt;10</div>
+                        <div class="text-gray-400 text-sm">毫秒平均延迟</div>
+                    </div>
+                    <div class="stat-number" style="animation-delay: 0.3s">
+                        <div class="text-4xl md:text-5xl font-bold text-gradient mb-2">99.9%</div>
+                        <div class="text-gray-400 text-sm">服务可用性</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 反馈邮箱区域 -->
+            <div class="max-w-3xl mx-auto text-center glass rounded-3xl p-8 md:p-12 border border-white/10 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-indigo-500 to-purple-500"></div>
+                
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl text-3xl mb-6">
+                    📧
+                </div>
+                
+                <h3 class="text-2xl md:text-3xl font-bold mb-4">与我们联系</h3>
+                <p class="text-gray-400 mb-8 leading-relaxed">
+                    无论是产品建议、技术支持，还是违规举报，我们都期待听到您的声音。<br>
+                    您的反馈是我们持续改进的动力。
+                </p>
+                
+                <a href="mailto:zephyrx-team@zephyrx.us.ci" class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl font-bold text-lg transition-all hover:scale-105 glow-hover btn-shine group">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    <span class="font-mono">zephyrx-team@zephyrx.us.ci</span>
+                    <svg class="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </a>
+                
+                <p class="mt-6 text-sm text-gray-500">
+                    通常在 24 小时内回复 • 支持违规举报
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特性展示 -->
+    <section id="features" class="py-20 bg-black/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">技术特性</h2>
+                <p class="text-gray-400">安全与效率的完美结合</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-emerald-500 to-teal-400 rounded-2xl flex items-center justify-center text-3xl animate-float">
+                        🔐
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">隐私保护</h3>
+                    <p class="text-gray-400">端到端加密确保通信内容安全，服务端无法解密用户数据</p>
+                </div>
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center text-3xl animate-float" style="animation-delay: 0.2s">
+                        ⚡
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">极速连接</h3>
+                    <p class="text-gray-400">P2P直连技术绕过中转服务器，实现毫秒级延迟传输</p>
+                </div>
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-pink-400 rounded-2xl flex items-center justify-center text-3xl animate-float" style="animation-delay: 0.4s">
+                        🛡️
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">合规运营</h3>
+                    <p class="text-gray-400">严格遵守法律法规，配合监管要求，保障用户合法权益</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section - 已修改 -->
+    <section id="download" class="py-20 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-indigo-900/30 to-purple-900/30"></div>
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">准备好开始了吗？</h2>
+                    <p class="text-lg text-gray-300 mb-6">选择适合您的工具，立即体验安全高效的数字生活</p>
+                    <div class="flex flex-col gap-3">
+                        <!-- 已修改：前往GitHub项目地址 -->
+                        <a href="https://github.com/ZIHUI678/ZeroLAN" target="_blank" class="flex items-center justify-between p-4 glass rounded-xl hover:bg-indigo-500/10 border border-indigo-500/20 transition-all group">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                                    </svg>
+                                </span>
+                                <div class="text-left">
+                                    <div class="font-bold text-white">ZeroLAN</div>
+                                    <div class="text-sm text-gray-400">GitHub 开源仓库</div>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-indigo-400 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                        
+                        <a href="https://pan.zx-cloud.de5.net" target="_blank" class="flex items-center justify-between p-4 glass rounded-xl hover:bg-purple-500/10 border border-purple-500/20 transition-all group">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">☁️</span>
+                                <div class="text-left">
+                                    <div class="font-bold text-white">ZX Cloud</div>
+                                    <div class="text-sm text-gray-400">Web端云盘</div>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-purple-400 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+
+                        <!-- 声明入口 -->
+                        <a href="https://zephyrx.us.ci/about.pdf" target="_blank" class="flex items-center justify-between p-4 glass rounded-xl hover:bg-amber-500/10 border border-amber-500/20 transition-all group">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">📄</span>
+                                <div class="text-left">
+                                    <div class="font-bold text-white">使用条款</div>
+                                    <div class="text-sm text-gray-400">查看完整服务声明</div>
+                                </div>
+                            </div>
+                            <svg class="w-5 h-5 text-amber-400 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl blur-2xl opacity-20"></div>
+                    <div class="relative glass rounded-2xl p-6 border border-white/10">
+                        <div class="flex items-center gap-2 mb-4 text-amber-400">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            <span class="font-mono text-sm">使用提示</span>
+                        </div>
+                        <p class="text-gray-300 text-sm leading-relaxed mb-4">
+                            ZeroLAN 仅提供开源代码，需自行编译部署。请仔细阅读使用条款，了解允许用途和禁止行为。
+                        </p>
+                        <div class="flex gap-2 text-xs text-gray-500 font-mono">
+                            <span class="px-2 py-1 rounded bg-white/5">自行编译</span>
+                            <span class="px-2 py-1 rounded bg-white/5">仅限合法用途</span>
+                            <span class="px-2 py-1 rounded bg-white/5">用户自担责任</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer - 已修改 -->
+    <footer class="border-t border-white/10 bg-black/50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <img src="https://zephyrx.us.ci/ZephyrX工作室图标.png" alt="ZephyrX" class="w-10 h-10 rounded-lg object-cover">
+                    <div>
+                        <div class="font-bold text-xl">ZephyrX Studio</div>
+                        <div class="text-xs text-gray-500">安全技术工作室</div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-6 text-sm">
+                    <a href="https://zephyrx.us.ci/about.pdf" target="_blank" class="text-gray-400 hover:text-amber-400 transition-colors flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        使用条款
+                    </a>
+                    <a href="https://pan.zx-cloud.de5.net" target="_blank" class="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-1">
+                        <span>☁️</span> ZX Cloud
+                    </a>
+                    <!-- 已修改：ZeroLAN指向GitHub -->
+                    <a href="https://github.com/ZIHUI678/ZeroLAN" target="_blank" class="text-gray-400 hover:text-indigo-400 transition-colors flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        ZeroLAN
+                    </a>
+                    <a href="https://github.com/ZIHUI678" target="_blank" class="text-gray-400 hover:text-white transition-colors flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        GitHub
+                    </a>
+                </div>
+                
+                <div class="text-gray-500 text-sm">
+                    © 2024 ZephyrX Studio. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 粒子背景动画
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const particles = [];
+        const particleCount = 50;
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            
+            draw() {
+                ctx.fillStyle = `rgba(99, 102, 241, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function init() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                // 连接线
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(99, 102, 241, ${0.1 * (1 - distance/150)})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        init();
+        animate();
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // 导航栏滚动效果
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                nav.classList.add('shadow-lg');
+                nav.classList.add('bg-black/80');
+            } else {
+                nav.classList.remove('shadow-lg');
+                nav.classList.remove('bg-black/80');
+            }
+            
+            lastScroll = currentScroll;
+        });
+        
+        // 数字滚动动画
+        const observerOptions = {
+            threshold: 0.5
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.stat-number').forEach(stat => {
+            stat.style.opacity = '0';
+            stat.style.transform = 'translateY(20px)';
+            stat.style.transition = 'all 0.8s ease-out';
+            observer.observe(stat);
+        });
+    </script>
+</body>
+</html>
