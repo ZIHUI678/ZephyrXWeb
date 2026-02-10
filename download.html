@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java 8 下载服务 - ZephyrX Studio</title>
+    <link rel="icon" type="image/png" href="https://zephyrx.us.ci/ZephyrX工作室图标.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0f;
+            color: #e2e8f0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* 动态背景 */
+        .bg-grid {
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* 玻璃拟态 */
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* 渐变文字 */
+        .text-gradient {
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* 按钮发光 */
+        .glow-orange {
+            box-shadow: 0 0 30px rgba(249, 115, 22, 0.5);
+        }
+        
+        .glow-orange:hover {
+            box-shadow: 0 0 50px rgba(249, 115, 22, 0.8);
+        }
+        
+        /* 扫描线效果 */
+        .scanline {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scanline::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            animation: scan 2s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        /* 浮动动画 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        /* 脉冲动画 */
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        .animate-pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        /* 下载进度条动画 */
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        
+        .progress-bar {
+            animation: progress 2s ease-out forwards;
+        }
+        
+        /* 粒子画布 */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        /* 滚动条 */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #f59e0b;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 粒子背景 -->
+    <canvas id="particles"></canvas>
+    
+    <!-- 动态网格背景 -->
+    <div class="fixed inset-0 bg-grid opacity-20 z-[-1]"></div>
+
+    <!-- 顶部导航 -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="https://zephyrx.us.ci" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                    <img src="https://zephyrx.us.ci/ZephyrX工作室图标.png" alt="ZephyrX" class="w-9 h-9 rounded-lg object-cover">
+                    <span class="font-bold text-xl tracking-tight">ZephyrX Studio</span>
+                </a>
+                <div class="flex items-center gap-4">
+                    <a href="https://zephyrx.us.ci" class="text-gray-400 hover:text-white transition-colors text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        返回主站
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区 -->
+    <main class="relative pt-32 pb-20 lg:pt-40 lg:pb-32 min-h-screen flex items-center justify-center">
+        <!-- 背景光晕 -->
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-600/20 rounded-full blur-3xl -z-10 animate-pulse-glow"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="text-center mb-12">
+                <!-- Java 图标 -->
+                <div class="inline-flex items-center justify-center w-24 h-24 mb-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-2xl animate-float">
+                    <svg class="w-14 h-14 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8.851 18.236s-1.65 1.276 1.164 1.699c3.382.52 5.125.453 8.859-.515 0 0 .983.614 2.356 1.144-8.402 3.611-18.959-.257-12.379-2.328zm-1.025-4.711s-1.848 1.369 1.011 1.663c3.786.378 6.795.408 11.991-.544 0 0 .683.691 1.759 1.07-10.647 3.112-22.558.245-14.761-2.189z"/>
+                        <path d="M13.743 6.171c2.225 2.562-.585 4.863-.585 4.863s5.632-2.911 3.048-6.554c-2.363-3.324-4.174-4.973 5.638-10.68 0 0-15.391 3.831-8.101 12.371z"/>
+                    </svg>
+                </div>
+                
+                <div class="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full border border-orange-500/30 bg-orange-500/10 text-orange-300 text-sm font-medium">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    官方稳定版本 · 免费下载
+                </div>
+                
+                <h1 class="text-5xl md:text-6xl font-bold mb-4">
+                    <span class="text-white">Java 8</span>
+                    <span class="block text-gradient mt-2">JDK 下载</span>
+                </h1>
+                
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                    Zulu OpenJDK 8u482 · Windows x64 版本<br>
+                    <span class="text-sm text-gray-500">由 ZephyrX Studio 提供下载加速服务</span>
+                </p>
+            </div>
+
+            <!-- 下载卡片 -->
+            <div class="glass rounded-3xl p-8 md:p-12 border border-orange-500/20 relative overflow-hidden max-w-2xl mx-auto">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 via-red-500 to-orange-500"></div>
+                
+                <!-- 文件信息 -->
+                <div class="space-y-6 mb-8">
+                    <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center text-2xl">
+                                📦
+                            </div>
+                            <div class="text-left">
+                                <div class="font-bold text-white">Zulu JDK 8</div>
+                                <div class="text-sm text-gray-400 font-mono">8u482-win_x64.zip</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm text-gray-400">文件大小</div>
+                            <div class="font-mono text-orange-400">~104 MB</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div class="p-3 bg-white/5 rounded-lg">
+                            <div class="text-xs text-gray-500 mb-1">版本</div>
+                            <div class="font-mono text-sm text-white">8u482</div>
+                        </div>
+                        <div class="p-3 bg-white/5 rounded-lg">
+                            <div class="text-xs text-gray-500 mb-1">架构</div>
+                            <div class="font-mono text-sm text-white">x64</div>
+                        </div>
+                        <div class="p-3 bg-white/5 rounded-lg">
+                            <div class="text-xs text-gray-500 mb-1">系统</div>
+                            <div class="font-mono text-sm text-white">Windows</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 下载按钮 -->
+                <a href="https://cdn.azul.com/zulu/bin/zulu8.92.0.19-ca-jdk8.0.482-win_x64.zip" 
+                   class="group relative block w-full py-5 bg-gradient-to-r from-orange-600 via-red-600 to-orange-600 rounded-xl font-bold text-xl text-white transition-all hover:scale-[1.02] glow-orange scanline overflow-hidden">
+                    <div class="relative z-10 flex items-center justify-center gap-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        <span>立即下载 Java 8</span>
+                    </div>
+                </a>
+
+                <!-- 提示信息 -->
+                <div class="mt-6 flex items-start gap-3 text-sm text-gray-400 bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
+                    <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-amber-300 font-medium mb-1">下载提示</p>
+                        <p>点击上方按钮将直接开始下载 ZIP 压缩包。下载完成后解压到任意目录，配置环境变量即可使用。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 快速链接 -->
+            <div class="mt-12 grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                <a href="https://zephyrx.us.ci" class="flex items-center justify-center gap-3 p-4 glass rounded-xl hover:bg-white/10 border border-white/10 transition-all group">
+                    <svg class="w-5 h-5 text-indigo-400 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    <div class="text-left">
+                        <div class="font-medium text-white">返回主站</div>
+                        <div class="text-xs text-gray-500">zephyrx.us.ci</div>
+                    </div>
+                </a>
+                
+                <div class="flex items-center justify-center gap-3 p-4 glass rounded-xl border border-white/10">
+                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div class="text-left">
+                        <div class="font-medium text-white">下载源可用</div>
+                        <div class="text-xs text-gray-500">Azul Zulu CDN</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 安装指南 -->
+            <div class="mt-16 glass rounded-2xl p-8 border border-white/10 max-w-3xl mx-auto">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span class="text-orange-400">📋</span>
+                    快速安装指南
+                </h3>
+                <div class="space-y-4 text-sm text-gray-300">
+                    <div class="flex gap-4">
+                        <div class="w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold flex-shrink-0">1</div>
+                        <div>
+                            <p class="font-medium text-white mb-1">下载并解压</p>
+                            <p class="text-gray-400">将 ZIP 文件解压到 <code class="bg-white/10 px-2 py-1 rounded text-orange-300">C:\Program Files\Java\</code> 目录</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold flex-shrink-0">2</div>
+                        <div>
+                            <p class="font-medium text-white mb-1">配置环境变量</p>
+                            <p class="text-gray-400">设置 <code class="bg-white/10 px-2 py-1 rounded text-orange-300">JAVA_HOME</code> 指向解压目录，并将 <code class="bg-white/10 px-2 py-1 rounded text-orange-300">%JAVA_HOME%\bin</code> 添加到 Path</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold flex-shrink-0">3</div>
+                        <div>
+                            <p class="font-medium text-white mb-1">验证安装</p>
+                            <p class="text-gray-400">打开命令提示符，运行 <code class="bg-white/10 px-2 py-1 rounded text-orange-300">java -version</code> 确认安装成功</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-black/50 py-8 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <img src="https://zephyrx.us.ci/ZephyrX工作室图标.png" alt="ZephyrX" class="w-8 h-8 rounded-lg object-cover">
+                    <div>
+                        <div class="font-bold">ZephyrX Studio</div>
+                        <div class="text-xs text-gray-500">Java 下载镜像服务</div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-6 text-sm text-gray-400">
+                    <a href="https://zephyrx.us.ci" class="hover:text-white transition-colors">主站</a>
+                    <a href="https://www.azul.com/downloads/?package=jdk" target="_blank" class="hover:text-orange-400 transition-colors">Zulu 官网</a>
+                </div>
+                
+                <div class="text-gray-600 text-xs">
+                    © 2024 ZephyrX Studio · 下载服务由 Azul 提供
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 粒子背景动画
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const particles = [];
+        const particleCount = 40;
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+                this.opacity = Math.random() * 0.5 + 0.1;
+                this.color = Math.random() > 0.5 ? '249, 115, 22' : '239, 68, 68'; // orange or red
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            
+            draw() {
+                ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function init() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                // 连接线
+                for (let j = i; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 100) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(249, 115, 22, ${0.1 * (1 - distance/100)})`;
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        init();
+        animate();
+        
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // 导航栏滚动效果
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 50) {
+                nav.classList.add('shadow-lg');
+                nav.classList.add('bg-black/90');
+            } else {
+                nav.classList.remove('shadow-lg');
+                nav.classList.remove('bg-black/90');
+            }
+        });
+
+        // 下载按钮点击反馈
+        document.querySelector('a[href*="zulu8"]').addEventListener('click', function(e) {
+            const btn = this;
+            btn.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                btn.style.transform = 'scale(1)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
